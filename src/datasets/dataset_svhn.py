@@ -41,7 +41,7 @@ class dataset_svhn_extra(data.Dataset):
       print("%s exists" % filename)
       return
     print("Download %s to %s" % (url, filename))
-    urllib.urlretrieve(url, filename)
+    urllib.request.urlretrieve(url, filename)
     print("Finish downloading %s" % filename)
 
   def _load_samples(self, file_path):

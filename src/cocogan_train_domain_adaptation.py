@@ -55,7 +55,7 @@ def main(argv):
 
   best_score = 0
   for ep in range(0, MAX_EPOCHS):
-    for it, ((images_a, labels_a), (images_b,labels_b)) in enumerate(itertools.izip(train_loader_a, train_loader_b)):
+    for it, ((images_a, labels_a), (images_b,labels_b)) in enumerate(zip(train_loader_a, train_loader_b)):
       if images_a.size(0) != batch_size or images_b.size(0) != batch_size:
         continue
       trainer.dis.train()

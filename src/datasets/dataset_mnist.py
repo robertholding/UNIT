@@ -41,8 +41,11 @@ class dataset_mnist32x32_train(data.Dataset):
 
   def _load_samples(self, full_filepath):
     f = gzip.open(full_filepath, 'rb')
-    train_set, valid_set, test_set = cPickle.load(f)
+    train_set, valid_set, test_set = cPickle.load(f, encoding='bytes')
     f.close()
+    print(train_set[0].shape)
+    print(valid_set[0].shape)
+    print(test_set[0].shape)
     images = np.concatenate((train_set[0], valid_set[0]), axis=0)
     labels = np.concatenate((train_set[1], valid_set[1]), axis=0)
     images = images.reshape((images.shape[0], 1, 32, 32))
@@ -61,7 +64,7 @@ class dataset_mnist32x32_train(data.Dataset):
       print("%s exists." % filename)
       return
     print("Download %s to %s" % (url, filename))
-    urllib.urlretrieve(url, filename)
+    urllib.request.urlretrieve(url, filename)
     print("Finish downloading %s" % filename)
     print("Resize images to 32x32")
     self._resize32x32(filename)
@@ -77,8 +80,9 @@ class dataset_mnist32x32_train(data.Dataset):
       return tmp_data_out
 
     f = gzip.open(full_filepath, 'rb')
-    train_set, valid_set, test_set = cPickle.load(f)
+    train_set, valid_set, test_set = cPickle.load(f,encoding='bytes')
     f.close()
+    print("I will resize and save the mnist to 32x32")
     with gzip.open(full_filepath, 'wb') as handle:
       cPickle.dump(([_resize(train_set[0]), train_set[1]],
                     [_resize(valid_set[0]), valid_set[1]],
@@ -100,7 +104,7 @@ class dataset_mnist32x32_test(dataset_mnist32x32_train):
 
   def _load_samples(self, full_filepath):
     f = gzip.open(full_filepath, 'rb')
-    train_set, valid_set, test_set = cPickle.load(f)
+    train_set, valid_set, test_set = cPickle.load(f, encoding='bytes')
     f.close()
     images = test_set[0]
     labels = test_set[1]
