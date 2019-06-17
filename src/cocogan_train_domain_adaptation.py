@@ -44,10 +44,6 @@ def main(argv):
   trainer = local_dict['trainer']
   trainer.cuda(opts.gpu)
 
-  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-  model = trainer().to(device)
-  summary(model, (3, 28, 28))
-
   iterations = 0
 
   train_writer = tensorboard.FileWriter("%s/%s" % (opts.log,os.path.splitext(os.path.basename(opts.config))[0]))
