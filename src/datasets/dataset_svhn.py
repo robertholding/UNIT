@@ -15,8 +15,8 @@ import urllib
 class dataset_svhn_extra(data.Dataset):
 # train 73,257, extra 531,131, test, 26,032
   def __init__(self, specs):
-    self.url = 'http://ufldl.stanford.edu/housenumbers/extra_32x32.mat'
-    self.filename = 'extra_32x32.mat'
+    self.url = 'http://ufldl.stanford.edu/housenumbers/train_32x32.mat'
+    self.filename = 'train_32x32.mat'
     self.root = specs['root']
     full_filepath = os.path.join(self.root, self.filename)
     self._download(full_filepath, self.url)

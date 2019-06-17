@@ -54,9 +54,10 @@ def main(argv):
   train_loader_a = get_data_loader(config.datasets['train_a'], batch_size)
   train_loader_b = get_data_loader(config.datasets['train_b'], batch_size)
   test_loader_b = get_data_loader(config.datasets['test_b'], batch_size = config.hyperparameters['test_batch_size'])
-
+  # print(train_loader_a.shape)
   best_score = 0
   for ep in range(0, MAX_EPOCHS):
+    print(ep)
     for it, ((images_a, labels_a), (images_b,labels_b)) in enumerate(zip(train_loader_a, train_loader_b)):
       if images_a.size(0) != batch_size or images_b.size(0) != batch_size:
         continue

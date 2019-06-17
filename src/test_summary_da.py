@@ -26,7 +26,7 @@ def main(argv):
   (opts, args) = parser.parse_args(argv)
   config = NetConfig(opts.config)
   trainer = cocogan_trainer_da.COCOGANDAContextTrainer(config.hyperparameters)
-  trainer1 = cocogan_nets_da.CoVAE32x32()
+  trainer1 = cocogan_nets_da.CoDis32x32()
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
   model = trainer1.to(device)
   summary(model, [(3, 32, 32), (1, 32, 32)])
