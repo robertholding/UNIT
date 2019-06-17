@@ -12,6 +12,7 @@ import itertools
 import tensorboard
 from tensorboard import summary
 from optparse import OptionParser
+from torchsummary import summary
 parser = OptionParser()
 parser.add_option('--gpu', type=int, help="gpu id", default=0)
 parser.add_option('--resume', type=int, help="resume training?", default=0)
@@ -34,6 +35,7 @@ def main(argv):
   config = NetConfig(opts.config)
 
   batch_size = config.hyperparameters['batch_size']
+  print(batch_size)
   max_iterations = config.hyperparameters['max_iterations']
 
   cmd = "trainer=%s(config.hyperparameters)" % config.hyperparameters['trainer']
@@ -41,6 +43,10 @@ def main(argv):
   exec(cmd,globals(),local_dict)
   trainer = local_dict['trainer']
   trainer.cuda(opts.gpu)
+
+  device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  model = trainer().to(device)
+  summary(model, (3, 28, 28))
 
   iterations = 0
 
