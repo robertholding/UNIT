@@ -54,15 +54,28 @@ def main(argv):
   train_loader_a = get_data_loader(config.datasets['train_a'], batch_size)
   train_loader_b = get_data_loader(config.datasets['train_b'], batch_size)
   test_loader_b = get_data_loader(config.datasets['test_b'], batch_size = config.hyperparameters['test_batch_size'])
-  # print(train_loader_a.shape)
+  print(train_loader_a)
+  train_loader_a_iter = iter(train_loader_a)
+  print(type(train_loader_a_iter))
+  images, labels = train_loader_a_iter.next()
+  print(images.size())
+  for i, j in enumerate(zip([1, 2, 3], [4, 5, 6])):
+      print("test",i)
+  for k in range(10):
+    for i, j in train_loader_a:
+      print("data_a:", i)
+  for i, j in enumerate(zip(train_loader_a, train_loader_b)):
+      print("a:", i)
   best_score = 0
   for ep in range(0, MAX_EPOCHS):
     print(ep)
     for it, ((images_a, labels_a), (images_b,labels_b)) in enumerate(zip(train_loader_a, train_loader_b)):
+      print(it)
       if images_a.size(0) != batch_size or images_b.size(0) != batch_size:
         continue
       trainer.dis.train()
       images_a = Variable(images_a.cuda(opts.gpu))
+      print(images_a)
       labels_a = Variable(labels_a.cuda(opts.gpu)).view(images_a.size(0))
       images_b = Variable(images_b.cuda(opts.gpu))
       # Main training code
@@ -79,6 +92,7 @@ def main(argv):
         score = 0
         num_samples = 0
         for tit, (test_images_b, test_labels_b) in enumerate(test_loader_b):
+          print(tit)
           test_images_b = Variable(test_images_b.cuda(opts.gpu))
           test_labels_b = Variable(test_labels_b.cuda(opts.gpu)).view(test_images_b.size(0))
           cls_outputs = trainer.dis.classify_b(test_images_b)
@@ -87,6 +101,7 @@ def main(argv):
           score += cls_acc
           num_samples += test_images_b.size(0)
         score /= 1.0 * num_samples
+        print(score)
         print('Classification accuracy for Test_B dataset: %4.4f' % score)
         if score > best_score:
           best_score = score
@@ -111,5 +126,6 @@ def main(argv):
         return
 
 if __name__ == '__main__':
+  print(sys.argv)
   main(sys.argv)
 
