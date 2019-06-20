@@ -11,7 +11,10 @@ def get_data_loader(conf, batch_size):
   dataset = []
   print("dataset=%s(conf)" % conf['class_name'])
   exec ("dataset=%s(conf)" % conf['class_name'])
-  return torch.utils.data.DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=10)
+  print("get_data_loader:", dataset[:])
+  # dataset1 = dataset_svhn_extra(conf)
+  # print("get_data_loder_dataset1", dataset1)
+  return torch.utils.data.DataLoader(dataset=dataset[:], batch_size=batch_size, shuffle=True, num_workers=10)
 
 def prepare_snapshot_folder(snapshot_prefix):
   snapshot_directory = os.path.dirname(snapshot_prefix)

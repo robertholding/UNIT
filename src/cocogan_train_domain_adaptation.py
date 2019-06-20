@@ -55,9 +55,9 @@ def main(argv):
   train_loader_b = get_data_loader(config.datasets['train_b'], batch_size)
   test_loader_b = get_data_loader(config.datasets['test_b'], batch_size = config.hyperparameters['test_batch_size'])
   print(train_loader_a)
-  train_loader_a_iter = iter(train_loader_a)
+  train_loader_a_iter = iter(test_loader_b)
   print(type(train_loader_a_iter))
-  images, labels = train_loader_a_iter.next()
+  images, labels = next(train_loader_a_iter)
   print(images.size())
   for i, j in enumerate(zip([1, 2, 3], [4, 5, 6])):
       print("test",i)

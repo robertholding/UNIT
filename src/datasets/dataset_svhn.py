@@ -21,12 +21,15 @@ class dataset_svhn_extra(data.Dataset):
     full_filepath = os.path.join(self.root, self.filename)
     self._download(full_filepath, self.url)
     data_set = self._load_samples(full_filepath)
+    # print(data_set)
     self.data = data_set[0]
     self.labels = data_set[1]
     self.num = self.data.shape[0]
 
+
   def __getitem__(self, index):
     img, label = self.data[index, ::], self.labels[index]
+    print("img shape:",img.shape)
     label = torch.LongTensor([np.int64(label)])
     return img, label
 
@@ -52,6 +55,7 @@ class dataset_svhn_extra(data.Dataset):
     y[item_index] = 0
     x = mat['X']
     train_data = [2*np.float32(np.transpose(x, [3, 2, 0, 1]) / 255.0)-1, np.squeeze(y)]
+    # print(train_data)
     return train_data
 
 
