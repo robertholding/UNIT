@@ -6,11 +6,46 @@ from datasets import *
 import os
 import torchvision
 from tensorboard import summary
+import torch
 
 def get_data_loader(conf, batch_size):
   dataset = []
   print("dataset=%s(conf)" % conf['class_name'])
-  exec ("dataset=%s(conf)" % conf['class_name'])
+  # exec ("dataset=%s(conf)" % conf['class_name'])
+  dataset = conf['class_name']()
+  print("get_data_loader:", dataset[:])
+  # dataset1 = dataset_svhn_extra(conf)
+  # print("get_data_loder_dataset1", dataset1)
+  return torch.utils.data.DataLoader(dataset=dataset[:], batch_size=batch_size, shuffle=True, num_workers=10)
+
+def get_data_loader_svhn(conf, batch_size):
+  dataset = []
+  print("dataset=%s(conf)" % conf['class_name'])
+  # exec ("dataset=%s(conf)" % conf['class_name'])
+  dataset = dataset_svhn_extra(conf)
+  # dataset = torch.from_numpy(dataset[:])
+  print("get_data_loader:", dataset[:])
+  # dataset1 = dataset_svhn_extra(conf)
+  # print("get_data_loder_dataset1", dataset1)
+  return torch.utils.data.DataLoader(dataset=dataset[:], batch_size=batch_size, shuffle=True, num_workers=10)
+
+def get_data_loader_mnist(conf, batch_size):
+  dataset = []
+  print("dataset=%s(conf)" % conf['class_name'])
+  # exec ("dataset=%s(conf)" % conf['class_name'])
+  dataset = dataset_mnist32x32_train(conf)
+  # dataset = torch.from_numpy(dataset[:])
+  print("get_data_loader:", dataset[:])
+  # dataset1 = dataset_svhn_extra(conf)
+  # print("get_data_loder_dataset1", dataset1)
+  return torch.utils.data.DataLoader(dataset=dataset[:], batch_size=batch_size, shuffle=True, num_workers=10)
+
+def get_data_loader_mnist_test(conf, batch_size):
+  dataset = []
+  print("dataset=%s(conf)" % conf['class_name'])
+  # exec ("dataset=%s(conf)" % conf['class_name'])
+  dataset = dataset_mnist32x32_test(conf)
+  # dataset = torch.from_numpy(dataset[:])
   print("get_data_loader:", dataset[:])
   # dataset1 = dataset_svhn_extra(conf)
   # print("get_data_loder_dataset1", dataset1)

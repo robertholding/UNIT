@@ -51,21 +51,21 @@ def main(argv):
   image_directory, snapshot_directory = prepare_snapshot_and_image_folder(config.snapshot_prefix, iterations, config.image_save_iterations)
 
   # Load datasets
-  train_loader_a = get_data_loader(config.datasets['train_a'], batch_size)
-  train_loader_b = get_data_loader(config.datasets['train_b'], batch_size)
-  test_loader_b = get_data_loader(config.datasets['test_b'], batch_size = config.hyperparameters['test_batch_size'])
+  train_loader_a = get_data_loader_svhn(config.datasets['train_a'], batch_size)
+  train_loader_b = get_data_loader_mnist(config.datasets['train_b'], batch_size)
+  test_loader_b = get_data_loader_mnist_test(config.datasets['test_b'], batch_size = config.hyperparameters['test_batch_size'])
   print(train_loader_a)
-  train_loader_a_iter = iter(test_loader_b)
-  print(type(train_loader_a_iter))
-  images, labels = next(train_loader_a_iter)
-  print(images.size())
-  for i, j in enumerate(zip([1, 2, 3], [4, 5, 6])):
-      print("test",i)
-  for k in range(10):
-    for i, j in train_loader_a:
-      print("data_a:", i)
-  for i, j in enumerate(zip(train_loader_a, train_loader_b)):
-      print("a:", i)
+  # train_loader_a_iter = iter(test_loader_b)
+  # print(type(train_loader_a_iter))
+  # images, labels = next(train_loader_a_iter)
+  # print(images.size())
+  # for i, j in enumerate(zip([1, 2, 3], [4, 5, 6])):
+      # print("test",i)
+  # for k in range(10):
+    # for i, j in train_loader_a:
+      # print("data_a:", i)
+  # for i, j in enumerate(zip(train_loader_a, train_loader_b)):
+      # print("a:", i)
   best_score = 0
   for ep in range(0, MAX_EPOCHS):
     print(ep)

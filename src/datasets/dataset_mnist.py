@@ -32,6 +32,8 @@ class dataset_mnist32x32_train(data.Dataset):
 
   def __getitem__(self, index):
     img, label = self.data[index, ::], self.labels[index]
+    print("img shape:", img.shape)
+    img = torch.LongTensor(img)
     label = torch.LongTensor([np.int64(label)])
     return img, label
     # return img
