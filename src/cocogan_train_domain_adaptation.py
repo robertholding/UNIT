@@ -10,9 +10,10 @@ from common import *
 import torchvision
 import itertools
 import tensorboard
-from tensorboard import summary
+from tensorboard import summary as summary
 from optparse import OptionParser
-from torchsummary import summary
+from torchsummary import summary as model_summary
+from data_utils import DataHandler
 parser = OptionParser()
 parser.add_option('--gpu', type=int, help="gpu id", default=0)
 parser.add_option('--resume', type=int, help="resume training?", default=0)
@@ -55,27 +56,66 @@ def main(argv):
   train_loader_b = get_data_loader_mnist(config.datasets['train_b'], batch_size)
   test_loader_b = get_data_loader_mnist_test(config.datasets['test_b'], batch_size = config.hyperparameters['test_batch_size'])
   print(train_loader_a)
-  # train_loader_a_iter = iter(test_loader_b)
-  # print(type(train_loader_a_iter))
-  # images, labels = next(train_loader_a_iter)
-  # print(images.size())
-  # for i, j in enumerate(zip([1, 2, 3], [4, 5, 6])):
-      # print("test",i)
-  # for k in range(10):
-    # for i, j in train_loader_a:
-      # print("data_a:", i)
-  # for i, j in enumerate(zip(train_loader_a, train_loader_b)):
-      # print("a:", i)
+
+  # load the data
+  data = DataHandler()
+  # svhn
+  (svhn_train_x, svhn_train_y), \
+  (svhn_test_x, svhn_test_y), (svhn_ext_x, svhn_ext_y), (_, _) \
+          = data.svhn_ufldl("../datasets/svhn/")
+  # svhn_train_x = data.resize(svhn_train_x, (28, 28))
+  # svhn_test_x = data.resize(svhn_test_x, (28, 28))
+  svhn_train_x = svhn_train_x.transpose(0, 3, 1, 2)
+  svhn_test_x = svhn_test_x.transpose(0, 3, 1, 2)
+  svhn_ext_x = svhn_ext_x.transpose(0, 3, 1, 2)
+  svhn_ext_x = svhn_ext_x[:, 0:1, :, :]
+  svhn_test_x = svhn_test_x[:, 0:1, :, :]
+
+  # svhn_train_y = torch.LongTensor([np.int64(svhn_train_y)])
+  # svhn_test_y = torch.LongTensor([np.int64(svhn_test_y)])
+  # svhn_ext_y = torch.LongTensor([np.int64(svhn_ext_y)])
+
+  print(svhn_train_x.shape, svhn_train_y.shape, svhn_test_x.shape,
+        svhn_test_y.shape)
+  size_batch = 64
+  svhn_generator_tr = data.batch_generator([svhn_train_x/255.0,
+                                           svhn_train_y], size_batch,
+                                          shuffle=True)
+  svhn_generator_ex = data.batch_generator([svhn_ext_x/255.0,
+                                           svhn_ext_y], size_batch,
+                                          shuffle=True)
+  svhn_generator_te = data.batch_generator([svhn_test_x/255.0,
+                                           svhn_test_y], size_batch,
+                                          shuffle=True)
+
+  # svhn_loader = torch.utils.data.DataLoader(dataset=(svhn_train_x, svhn_train_y),
+                                            # batch_size=batch_size,
+                                            # shuffle=True,
+                                            # num_workers=10)
+  # svhn_ext_loder = torch.utils.data.DataLoader(dataset=(svhn_ext_x, svhn_ext_y),
+                                               # batch_size=batch_size,
+                                               # shuffle=True,
+                                               # num_workers=10)
+  # svhn_te_loader = torch.utils.data.DataLoader(dataset=(svhn_test_x, svhn_test_y),
+                                               # batch_size=batch_size,
+                                               # shuffle=True,
+                                               # num_workers=10)
+
   best_score = 0
   for ep in range(0, MAX_EPOCHS):
-    print(ep)
-    for it, ((images_a, labels_a), (images_b,labels_b)) in enumerate(zip(train_loader_a, train_loader_b)):
-      print(it)
-      if images_a.size(0) != batch_size or images_b.size(0) != batch_size:
-        continue
+    print("epoch:", ep)
+    for it, ((images_a, labels_a), (images_b,labels_b)) in \
+    enumerate(zip(svhn_generator_tr, svhn_generator_ex)):
+      print("images:", it)
+      # if images_a.size(0) != batch_size or images_b.size(0) != batch_size:
+        # continue
+      images_a = torch.tensor(images_a).float()
+      labels_a = torch.LongTensor([np.int64(labels_a)])
+      images_b = torch.tensor(images_b).float()
+      labels_b = torch.tensor([np.int64(labels_b)])
       trainer.dis.train()
       images_a = Variable(images_a.cuda(opts.gpu))
-      print(images_a)
+      print("tensor images:", images_a)
       labels_a = Variable(labels_a.cuda(opts.gpu)).view(images_a.size(0))
       images_b = Variable(images_b.cuda(opts.gpu))
       # Main training code
@@ -91,8 +131,11 @@ def main(argv):
         trainer.dis.eval()
         score = 0
         num_samples = 0
-        for tit, (test_images_b, test_labels_b) in enumerate(test_loader_b):
-          print(tit)
+        for tit, (test_images_b, test_labels_b) in enumerate(svhn_generator_te):
+          print("test:", tit)
+          test_images_b = torch.tensor(test_images_b).float()
+          test_labels_b = torch.LongTensor([np.int64(test_labels_b)])
+          print("test tensor images", test_images_b)
           test_images_b = Variable(test_images_b.cuda(opts.gpu))
           test_labels_b = Variable(test_labels_b.cuda(opts.gpu)).view(test_images_b.size(0))
           cls_outputs = trainer.dis.classify_b(test_images_b)
@@ -100,6 +143,8 @@ def main(argv):
           cls_acc = (cls_predicts == test_labels_b.data).sum()
           score += cls_acc
           num_samples += test_images_b.size(0)
+          if tit == 100:
+              break
         score /= 1.0 * num_samples
         print(score)
         print('Classification accuracy for Test_B dataset: %4.4f' % score)

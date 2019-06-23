@@ -75,11 +75,11 @@ class COCOGANDAContextTrainer(nn.Module):
                  hyperparameters['ll_normalized_direct_w'] * (ll_loss_a + ll_loss_b)
     total_loss.backward()
     self.gen_opt.step()
-    self.gen_ad_loss = ad_loss.data.cpu().numpy()[0]
-    self.gen_ll_loss_a = ll_loss_a.data.cpu().numpy()[0]
-    self.gen_ll_loss_b = ll_loss_b.data.cpu().numpy()[0]
-    self.gen_enc_loss = encoding_loss.data.cpu().numpy()[0]
-    self.gen_total_loss = total_loss.data.cpu().numpy()[0]
+    self.gen_ad_loss = ad_loss.data.cpu().numpy()
+    self.gen_ll_loss_a = ll_loss_a.data.cpu().numpy()
+    self.gen_ll_loss_b = ll_loss_b.data.cpu().numpy()
+    self.gen_enc_loss = encoding_loss.data.cpu().numpy()
+    self.gen_total_loss = total_loss.data.cpu().numpy()
     return x_aa, x_ba, x_ab, x_bb
 
   def dis_update(self, images_a, labels_a, images_b, hyperparameters):
@@ -122,12 +122,12 @@ class COCOGANDAContextTrainer(nn.Module):
     self.dis_fake_acc = fake_acc
     self.dis_cls_acc  = cls_acc
 
-    self.dis_cls_loss = cls_loss.data.cpu().numpy()[0]
-    self.dis_ad_true_loss = ad_true_loss.data.cpu().numpy()[0]
-    self.dis_ad_fake_loss_a = ad_fake_loss.data.cpu().numpy()[0]
-    self.dis_feature_loss_a = feature_loss_a.data.cpu().numpy()[0]
-    self.dis_feature_loss_b = feature_loss_b.data.cpu().numpy()[0]
-    self.dis_total_loss = total_loss.data.cpu().numpy()[0]
+    self.dis_cls_loss = cls_loss.data.cpu().numpy()
+    self.dis_ad_true_loss = ad_true_loss.data.cpu().numpy()
+    self.dis_ad_fake_loss_a = ad_fake_loss.data.cpu().numpy()
+    self.dis_feature_loss_a = feature_loss_a.data.cpu().numpy()
+    self.dis_feature_loss_b = feature_loss_b.data.cpu().numpy()
+    self.dis_total_loss = total_loss.data.cpu().numpy()
     return
 
   def resume(self, snapshot_prefix):
@@ -199,11 +199,11 @@ class COCOGANDATrainer(nn.Module):
                  hyperparameters['ll_normalized_direct_w'] * (ll_loss_a + ll_loss_b)
     total_loss.backward()
     self.gen_opt.step()
-    self.gen_ad_loss = ad_loss.data.cpu().numpy()[0]
-    self.gen_ll_loss_a = ll_loss_a.data.cpu().numpy()[0]
-    self.gen_ll_loss_b = ll_loss_b.data.cpu().numpy()[0]
-    self.gen_enc_loss = encoding_loss.data.cpu().numpy()[0]
-    self.gen_total_loss = total_loss.data.cpu().numpy()[0]
+    self.gen_ad_loss = ad_loss.data.cpu().numpy()
+    self.gen_ll_loss_a = ll_loss_a.data.cpu().numpy()
+    self.gen_ll_loss_b = ll_loss_b.data.cpu().numpy()
+    self.gen_enc_loss = encoding_loss.data.cpu().numpy()
+    self.gen_total_loss = total_loss.data.cpu().numpy()
     return x_aa, x_ba, x_ab, x_bb
 
   def dis_update(self, images_a, labels_a, images_b, hyperparameters):
@@ -244,12 +244,12 @@ class COCOGANDATrainer(nn.Module):
     self.dis_fake_acc = fake_acc
     self.dis_cls_acc  = cls_acc
 
-    self.dis_cls_loss = cls_loss.data.cpu().numpy()[0]
-    self.dis_ad_true_loss = ad_true_loss.data.cpu().numpy()[0]
-    self.dis_ad_fake_loss_a = ad_fake_loss.data.cpu().numpy()[0]
-    self.dis_feature_loss_a = feature_loss_a.data.cpu().numpy()[0]
-    self.dis_feature_loss_b = feature_loss_b.data.cpu().numpy()[0]
-    self.dis_total_loss = total_loss.data.cpu().numpy()[0]
+    self.dis_cls_loss = cls_loss.data.cpu().numpy()
+    self.dis_ad_true_loss = ad_true_loss.data.cpu().numpy()
+    self.dis_ad_fake_loss_a = ad_fake_loss.data.cpu().numpy()
+    self.dis_feature_loss_a = feature_loss_a.data.cpu().numpy()
+    self.dis_feature_loss_b = feature_loss_b.data.cpu().numpy()
+    self.dis_total_loss = total_loss.data.cpu().numpy()
     return
 
   def resume(self, snapshot_prefix):
