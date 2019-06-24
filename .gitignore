@@ -10,6 +10,5 @@ notebooks/.ipynb_checkpoints/*
 *.pyc
 *.png
 *.jpg
-*.yaml
 *.gif
 *.txt
