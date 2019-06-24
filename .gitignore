@@ -8,3 +8,8 @@ notebooks/.ipynb_checkpoints/*
 *.zip
 *.pkl
 *.pyc
+*.png
+*.jpg
+*.yaml
+*.gif
+*.txt

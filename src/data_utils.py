@@ -4,6 +4,7 @@
 import pickle
 import os
 import glob
+import gzip
 
 # from tensorflow.examples.tutorials.mnist import input_data
 import scipy.io as sio
@@ -21,6 +22,21 @@ class DataHandler:
 
     def __init__(self):
         pass
+
+    def mnist(self, file_path):
+        """mnist read from original files"""
+        x_train, y_train = self.load_mnist(file_path, kind='train')
+        x_test, y_test = self.load_mnist(file_path, kind='t10k')
+        x_train = (x_train - 0.5) * 2
+        x_test = (x_test - 0.5) * 2
+
+        x_train = x_train.reshape(-1, 28, 28, 1)
+        x_test = x_test.reshape(-1, 28, 28, 1)
+
+        x_train = np.concatenate([x_train, x_train, x_train], 3)
+        x_test = np.concatenate([x_test, x_test, x_test], 3)
+
+        return (x_train, y_train), (x_test, y_test)
 
     # def mnist_tf(self, file_path):
         # """
@@ -95,103 +111,103 @@ class DataHandler:
         # """
         # return mnist.load_data()
 
-    # def mnist_m(self, file_path):
-        # """
-        # read the mnist_m and the labels
-        # :param file_path: where is the mnist_m.pkl
-        # :return: (x_train, y_train), (x_test, y_test), (x_valid, y_valid)
-        # """
-        # # load and read the pickl file
-        # mnist_m_path = os.path.join(file_path, 'mnistm_data.pkl')
-        # print(mnist_m_path)
-        # with open(mnist_m_path, 'rb') as fo:
-            # # should use the with as, this method is as the same as SVHN
-            # mnist_m = pickle.load(fo, encoding='bytes')
+    def mnist_m(self, file_path):
+        """
+        read the mnist_m and the labels
+        :param file_path: where is the mnist_m.pkl
+        :return: (x_train, y_train), (x_test, y_test), (x_valid, y_valid)
+        """
+        # load and read the pickl file
+        mnist_m_path = os.path.join(file_path, 'mnistm_data.pkl')
+        print(mnist_m_path)
+        with open(mnist_m_path, 'rb') as fo:
+            # should use the with as, this method is as the same as SVHN
+            mnist_m = pickle.load(fo, encoding='bytes')
 
-        # # get the mnist_m images data
-        # mnist_m_train = mnist_m['train']
-        # mnist_m_test = mnist_m['test']
-        # mnist_m_valid = mnist_m['valid']
+        # get the mnist_m images data
+        mnist_m_train = mnist_m['train']
+        mnist_m_test = mnist_m['test']
+        mnist_m_valid = mnist_m['valid']
 
-        # # get the mnist_m, its labels equal the mnist's
-        # mnist = input_data.read_data_sets(file_path)
-        # mnist_m_train_label = mnist.train.labels
-        # mnist_m_test_label = mnist.test.labels
-        # mnist_m_valid_label = mnist.validation.labels
+        # get the mnist_m, its labels equal the mnist's
+        mnist = input_data.read_data_sets(file_path)
+        mnist_m_train_label = mnist.train.labels
+        mnist_m_test_label = mnist.test.labels
+        mnist_m_valid_label = mnist.validation.labels
 
-        # return (mnist_m_train, mnist_m_train_label), \
-               # (mnist_m_test, mnist_m_test_label), \
-               # (mnist_m_valid, mnist_m_valid_label)
+        return (mnist_m_train, mnist_m_train_label), \
+               (mnist_m_test, mnist_m_test_label), \
+               (mnist_m_valid, mnist_m_valid_label)
 
-    # def mnist_m_multi(self, file_path):
-        # """
-        # read the mnist_multi with polluted background (i.e. mnistm) and the 
-        # labels, it is created by creat_mnitm_multi.py first
-        # :param file_path: where is the mnist_m.pkl
-        # :return: (x_train, y_train), (x_test, y_test), (x_valid, y_valid)
-        # """
-        # # load and read the pickl file
-        # mnist_m_path = os.path.join(file_path, 'mnistm_multi_data.pkl')
-        # print(mnist_m_path)
-        # with open(mnist_m_path, 'rb') as fo:
-            # # should use the with as, this method is as the same as SVHN
-            # mnist_m = pickle.load(fo, encoding='bytes')
+    def mnist_m_multi(self, file_path):
+        """
+        read the mnist_multi with polluted background (i.e. mnistm) and the 
+        labels, it is created by creat_mnitm_multi.py first
+        :param file_path: where is the mnist_m.pkl
+        :return: (x_train, y_train), (x_test, y_test), (x_valid, y_valid)
+        """
+        # load and read the pickl file
+        mnist_m_path = os.path.join(file_path, 'mnistm_multi_data.pkl')
+        print(mnist_m_path)
+        with open(mnist_m_path, 'rb') as fo:
+            # should use the with as, this method is as the same as SVHN
+            mnist_m = pickle.load(fo, encoding='bytes')
 
-        # # get the mnist_m images data
-        # mnist_m_train = mnist_m['train']
-        # mnist_m_test = mnist_m['test']
-        # mnist_m_valid = mnist_m['valid']
+        # get the mnist_m images data
+        mnist_m_train = mnist_m['train']
+        mnist_m_test = mnist_m['test']
+        mnist_m_valid = mnist_m['valid']
 
-        # # get the mnist_m, its labels equal the mnist's
-        # mnist = input_data.read_data_sets(file_path)
-        # mnist_m_train_label = mnist.train.labels
-        # mnist_m_test_label = mnist.test.labels
-        # mnist_m_valid_label = mnist.validation.labels
+        # get the mnist_m, its labels equal the mnist's
+        mnist = input_data.read_data_sets(file_path)
+        mnist_m_train_label = mnist.train.labels
+        mnist_m_test_label = mnist.test.labels
+        mnist_m_valid_label = mnist.validation.labels
 
-        # return (mnist_m_train, mnist_m_train_label), \
-               # (mnist_m_test, mnist_m_test_label), \
-               # (mnist_m_valid, mnist_m_valid_label)
+        return (mnist_m_train, mnist_m_train_label), \
+               (mnist_m_test, mnist_m_test_label), \
+               (mnist_m_valid, mnist_m_valid_label)
 
-    # def usps(self, file_path):
-        # """
-        # this is the data parser for usps.mat
-        # :param file_path:
-        # :return:
-        # """
-        # # load the mat file
-        # file_path_data = os.path.join(file_path, "usps_all.mat")
-        # usps = sio.loadmat(file_path_data)
+    def usps(self, file_path):
+        """
+        this is the data parser for usps.mat
+        :param file_path:
+        :return:
+        """
+        # load the mat file
+        file_path_data = os.path.join(file_path, "usps_all.mat")
+        usps = sio.loadmat(file_path_data)
 
-        # # reshape and transpose the original data to one channel image format
-        # data_usps = usps['data'].transpose(2, 1, 0). \
-                                     # reshape(11000, 16, 16, 1). \
-                                         # transpose(0, 2, 1, 3)
-        # data_usps = np.concatenate([data_usps, data_usps, data_usps], 3)
+        # reshape and transpose the original data to one channel image format
+        data_usps = usps['data'].transpose(2, 1, 0). \
+                                     reshape(11000, 16, 16, 1). \
+                                         transpose(0, 2, 1, 3)
+        data_usps = np.concatenate([data_usps, data_usps, data_usps], 3)
 
-        # # label
-        # label_usps = np.zeros(10*1100)  # every category has 1100 samples
-        # for i in range(10):
-            # label_usps[1100*i:1100*(i + 1)] = np.tile((i + 1), 1100)
-            # if i == 9:
-                # label_usps[1100*i:1100*(i + 1)] = np.tile(0, 1100)
+        # label
+        label_usps = np.zeros(10*1100)  # every category has 1100 samples
+        for i in range(10):
+            label_usps[1100*i:1100*(i + 1)] = np.tile((i + 1), 1100)
+            if i == 9:
+                label_usps[1100*i:1100*(i + 1)] = np.tile(0, 1100)
 
-        # # shuffle
-        # usps_data_n, usps_label_n = self.shuffle_aligned_list(
-                                        # data=[data_usps, label_usps])
+        # shuffle
+        usps_data_n, usps_label_n = self.shuffle_aligned_list(
+                                        data=[data_usps, label_usps])
 
-        # # get the train and test data, label
-        # split_ratio = 0.8
-        # split_s = 0
-        # split_e = int(len(usps_data_n) * split_ratio)
-        # len_data = len(data_usps)
+        # get the train and test data, label
+        split_ratio = 0.8
+        split_s = 0
+        split_e = int(len(usps_data_n) * split_ratio)
+        len_data = len(data_usps)
 
-        # data_train_x = usps_data_n[split_s:split_e]
-        # label_train_y = usps_label_n[split_s:split_e]
-        # data_test_x = usps_data_n[split_e:len_data]
-        # label_test_y = usps_label_n[split_e:len_data]
+        data_train_x = usps_data_n[split_s:split_e]
+        label_train_y = usps_label_n[split_s:split_e]
+        data_test_x = usps_data_n[split_e:len_data]
+        label_test_y = usps_label_n[split_e:len_data]
 
-        # return (data_train_x, label_train_y.astype(np.int32)), \
-               # (data_test_x, label_test_y.astype(np.int32))
+        return (data_train_x, label_train_y.astype(np.int32)), \
+               (data_test_x, label_test_y.astype(np.int32))
 
     def svhn_ufldl(self, file_path):
         """
@@ -273,177 +289,177 @@ class DataHandler:
                (x_extra_train, y_extra_train.astype(np.int32)), \
                (x_extra_test, y_extra_test.astype(np.int32))
 
-    # def svhn_ufldl_xy(self, file_path):
-        # """
-        # read the svhn dataset
-        # :param file_path: where svhn is
-        # :return: x_train, y_train, x_test, y_test
-        # """
-        # full_path_train = os.path.join(file_path, "train_32x32.mat")
-        # full_path_test = os.path.join(file_path, "test_32x32.mat")
-        # full_path_extra = os.path.join(file_path, "extra_32x32.mat")
+    def svhn_ufldl_xy(self, file_path):
+        """
+        read the svhn dataset
+        :param file_path: where svhn is
+        :return: x_train, y_train, x_test, y_test
+        """
+        full_path_train = os.path.join(file_path, "train_32x32.mat")
+        full_path_test = os.path.join(file_path, "test_32x32.mat")
+        full_path_extra = os.path.join(file_path, "extra_32x32.mat")
 
-        # # train data
-        # data_train = sio.loadmat(full_path_train)
-        # x_train = data_train['X'].transpose(3, 0, 1, 2).astype('uint8')
-        # y_train_ovrall = data_train['y'].astype('uint8')
+        # train data
+        data_train = sio.loadmat(full_path_train)
+        x_train = data_train['X'].transpose(3, 0, 1, 2).astype('uint8')
+        y_train_ovrall = data_train['y'].astype('uint8')
 
-        # # train data: add the x and y coordinate information, as two 
-        # # additional channels of the original image data
-        # x_train_xy = self.add_position_info(x_train)
+        # train data: add the x and y coordinate information, as two 
+        # additional channels of the original image data
+        x_train_xy = self.add_position_info(x_train)
 
-        # ## change the label format to np.array with shape(len(y_train),)
-        # y_train = np.ones((len(y_train_ovrall)))
-        # for i in range(len(y_train_ovrall)):
-            # y_train[i] = y_train_ovrall[i][0]
-            # if y_train[i] == 10:
-                # y_train[i] = 0
+        ## change the label format to np.array with shape(len(y_train),)
+        y_train = np.ones((len(y_train_ovrall)))
+        for i in range(len(y_train_ovrall)):
+            y_train[i] = y_train_ovrall[i][0]
+            if y_train[i] == 10:
+                y_train[i] = 0
 
-        # # test data
-        # data_test = sio.loadmat(full_path_test)
-        # x_test = data_test['X'].transpose(3, 0, 1, 2).astype('uint8')
-        # y_test_overall = data_test['y'].astype('uint8')
+        # test data
+        data_test = sio.loadmat(full_path_test)
+        x_test = data_test['X'].transpose(3, 0, 1, 2).astype('uint8')
+        y_test_overall = data_test['y'].astype('uint8')
 
-        # # test data: add the x and y coordinate information, as two additional 
-        # # channels of the original image data
-        # x_test_xy = self.add_position_info(x_test)
+        # test data: add the x and y coordinate information, as two additional 
+        # channels of the original image data
+        x_test_xy = self.add_position_info(x_test)
 
-        # # change the label format to np.array with shape(len(y_test),)
-        # y_test = np.ones((len(y_test_overall)))
-        # for i in range(len(y_test_overall)):
-            # y_test[i] = y_test_overall[i][0]
-            # if y_test[i] == 10:
-                # y_test[i] = 0
+        # change the label format to np.array with shape(len(y_test),)
+        y_test = np.ones((len(y_test_overall)))
+        for i in range(len(y_test_overall)):
+            y_test[i] = y_test_overall[i][0]
+            if y_test[i] == 10:
+                y_test[i] = 0
 
-        # ## extra data
-        # n_s = 0
-        # n_e = 70000
-        # split_ratio = 0.8
-        # split_s = 0
-        # split_e = int(n_e*split_ratio)
+        ## extra data
+        n_s = 0
+        n_e = 70000
+        split_ratio = 0.8
+        split_s = 0
+        split_e = int(n_e*split_ratio)
 
-        # data_extra = sio.loadmat(full_path_extra)
-        # x_extra = data_extra['X'].transpose(3, 0, 1, 2).astype('uint8')
-        # y_extra = data_extra['y'].astype('uint8')
-        # # shuffle the data and label
-        # x_extra, y_extra = self.shuffle_aligned_list([x_extra, y_extra])
+        data_extra = sio.loadmat(full_path_extra)
+        x_extra = data_extra['X'].transpose(3, 0, 1, 2).astype('uint8')
+        y_extra = data_extra['y'].astype('uint8')
+        # shuffle the data and label
+        x_extra, y_extra = self.shuffle_aligned_list([x_extra, y_extra])
 
-        # x_extra_small = x_extra[n_s:n_e]  # get a small part 
-        # y_extra_small = y_extra[n_s:n_e]
+        x_extra_small = x_extra[n_s:n_e]  # get a small part 
+        y_extra_small = y_extra[n_s:n_e]
 
-        # del x_extra
+        del x_extra
 
-        # x_extra_train = x_extra_small[split_s:split_e]
-        # y_extra_train_1 = y_extra_small[split_s:split_e].astype('uint8')
+        x_extra_train = x_extra_small[split_s:split_e]
+        y_extra_train_1 = y_extra_small[split_s:split_e].astype('uint8')
 
-        # x_extra_test = x_extra_small[split_e:n_e]
-        # y_extra_test_1 = y_extra_small[split_e:n_e].astype('uint8')
+        x_extra_test = x_extra_small[split_e:n_e]
+        y_extra_test_1 = y_extra_small[split_e:n_e].astype('uint8')
 
-        # # add position information for extra small dataset
-        # x_extra_train_xy = self.add_position_info(data_img=x_extra_train)
-        # x_extra_test_xy = self.add_position_info(data_img=x_extra_test)
+        # add position information for extra small dataset
+        x_extra_train_xy = self.add_position_info(data_img=x_extra_train)
+        x_extra_test_xy = self.add_position_info(data_img=x_extra_test)
 
-        # # change the label format to np.array with shape(len(y_test),)
-        # y_extra_train_xy = np.ones((len(y_extra_train_1)))
-        # for i in range(len(y_extra_train_1)):
-            # y_extra_train_xy[i] = y_extra_train_1[i][0]
-            # if y_extra_train_xy[i] == 10:
-                # y_extra_train_xy[i] = 0
+        # change the label format to np.array with shape(len(y_test),)
+        y_extra_train_xy = np.ones((len(y_extra_train_1)))
+        for i in range(len(y_extra_train_1)):
+            y_extra_train_xy[i] = y_extra_train_1[i][0]
+            if y_extra_train_xy[i] == 10:
+                y_extra_train_xy[i] = 0
 
-        # y_extra_test_xy = np.ones((len(y_extra_test_1)))
-        # for i in range(len(y_extra_test_1)):
-            # y_extra_test_xy[i] = y_extra_test_1[i][0]
-            # if y_extra_test_xy[i] == 10:
-                # y_extra_test_xy[i] = 0
+        y_extra_test_xy = np.ones((len(y_extra_test_1)))
+        for i in range(len(y_extra_test_1)):
+            y_extra_test_xy[i] = y_extra_test_1[i][0]
+            if y_extra_test_xy[i] == 10:
+                y_extra_test_xy[i] = 0
 
-        # return (x_train_xy, y_train.astype(np.int32)), \
-               # (x_test_xy, y_test.astype(np.int32)), \
-               # (x_extra_train_xy, y_extra_train_xy.astype(np.int32)), \
-               # (x_extra_test_xy, y_extra_test_xy.astype(np.int32))
+        return (x_train_xy, y_train.astype(np.int32)), \
+               (x_test_xy, y_test.astype(np.int32)), \
+               (x_extra_train_xy, y_extra_train_xy.astype(np.int32)), \
+               (x_extra_test_xy, y_extra_test_xy.astype(np.int32))
 
 
-    # def cifar10_alex(self, file_path):
-        # """
-        # read the cifar10 from original data, and to parse to one dataset
-        # :param file_path: where cifar10 is
-        # :return: x_train, y_train, x_test, y_test
-        # """
-        # # train data setting
-        # data_all_train = np.zeros((50000, 3072)).astype('uint8')
-        # label_all_train = np.zeros(50000, ).astype('uint8')
+    def cifar10_alex(self, file_path):
+        """
+        read the cifar10 from original data, and to parse to one dataset
+        :param file_path: where cifar10 is
+        :return: x_train, y_train, x_test, y_test
+        """
+        # train data setting
+        data_all_train = np.zeros((50000, 3072)).astype('uint8')
+        label_all_train = np.zeros(50000, ).astype('uint8')
 
-        # # # test data setting
-        # # data_all_test = np.zeros((10000, 3072))
-        # # label_all_test = np.zeros(10000,)
+        # # test data setting
+        # data_all_test = np.zeros((10000, 3072))
+        # label_all_test = np.zeros(10000,)
 
-        # # global setting
-        # batch_size = 10000
+        # global setting
+        batch_size = 10000
 
-        # full_path_train = os.path.join(file_path, 'data*')
-        # full_path_test = os.path.join(file_path, 'test_batch')
-        # # glob.glob find all the related file
-        # print(sorted(glob.glob(full_path_train)))
+        full_path_train = os.path.join(file_path, 'data*')
+        full_path_test = os.path.join(file_path, 'test_batch')
+        # glob.glob find all the related file
+        print(sorted(glob.glob(full_path_train)))
 
-        # # to get all the train data and correspond labels
-        # for batch, index in zip(sorted(glob.glob(full_path_train)), range(5)):
-            # print(batch, index)
-            # with open(batch, 'rb') as fo:
-                # data_batch_train = pickle.load(fo, encoding='bytes')
-                # #     dict_all[os.path.split(batch)[1]] = data_batch
-                # data_all_train[index * batch_size:index * batch_size
-                               # + batch_size] = \
-                                   # data_batch_train[b'data'].astype('uint8')
-                # # list to np.array
-                # label_batch = np.array(data_batch_train[b'labels'])
-                # label_all_train[index * batch_size:index * batch_size
-                                # + batch_size] = label_batch.astype('uint8')
+        # to get all the train data and correspond labels
+        for batch, index in zip(sorted(glob.glob(full_path_train)), range(5)):
+            print(batch, index)
+            with open(batch, 'rb') as fo:
+                data_batch_train = pickle.load(fo, encoding='bytes')
+                #     dict_all[os.path.split(batch)[1]] = data_batch
+                data_all_train[index * batch_size:index * batch_size
+                               + batch_size] = \
+                                   data_batch_train[b'data'].astype('uint8')
+                # list to np.array
+                label_batch = np.array(data_batch_train[b'labels'])
+                label_all_train[index * batch_size:index * batch_size
+                                + batch_size] = label_batch.astype('uint8')
 
-        # with open(full_path_test, 'rb') as fo:
-            # data_batch_test = pickle.load(fo, encoding='bytes')
-            # data_all_test = data_batch_test[b'data'].astype('uint8')
-            # label_all_test = np.array(data_batch_test[b'labels']).astype('uint8')
-        # # first 1024, then second 1024
-        # data_all_train = \
-            # data_all_train.reshape((50000, 3, 32, 32)).transpose(0, 2, 3, 1)
-        # data_all_test = data_all_test.reshape((10000, 3, 32, 32)). \
-                                          # transpose(0, 2, 3, 1)
+        with open(full_path_test, 'rb') as fo:
+            data_batch_test = pickle.load(fo, encoding='bytes')
+            data_all_test = data_batch_test[b'data'].astype('uint8')
+            label_all_test = np.array(data_batch_test[b'labels']).astype('uint8')
+        # first 1024, then second 1024
+        data_all_train = \
+            data_all_train.reshape((50000, 3, 32, 32)).transpose(0, 2, 3, 1)
+        data_all_test = data_all_test.reshape((10000, 3, 32, 32)). \
+                                          transpose(0, 2, 3, 1)
 
-        # return (data_all_train, label_all_train), \
-               # (data_all_test, label_all_test)
+        return (data_all_train, label_all_train), \
+               (data_all_test, label_all_test)
 
-    # def cifar100_alex(self, file_path):
-        # """
-        # read the cifar100 data from the original dataset
-        # :param file_path: where the cifar100 is
-        # :return: x_train, y_train, x_test, y_test
-        # """
-        # full_path_train = os.path.join(file_path, 'train')
-        # full_path_test = os.path.join(file_path, 'test')
+    def cifar100_alex(self, file_path):
+        """
+        read the cifar100 data from the original dataset
+        :param file_path: where the cifar100 is
+        :return: x_train, y_train, x_test, y_test
+        """
+        full_path_train = os.path.join(file_path, 'train')
+        full_path_test = os.path.join(file_path, 'test')
 
-        # with open(full_path_train, 'rb') as fo:
-            # data_batch_train = pickle.load(fo, encoding='bytes')
-            # data_all_train = data_batch_train[b'data'].astype('uint8')
-            # coarse_label_all_train \
-                    # = np.array(
-                          # data_batch_train[b'coarse_labels']).astype('uint8')
-            # fine_label_all_train \
-                    # = np.array(data_batch_train[b'fine_labels']).astype('uint8')
+        with open(full_path_train, 'rb') as fo:
+            data_batch_train = pickle.load(fo, encoding='bytes')
+            data_all_train = data_batch_train[b'data'].astype('uint8')
+            coarse_label_all_train \
+                    = np.array(
+                          data_batch_train[b'coarse_labels']).astype('uint8')
+            fine_label_all_train \
+                    = np.array(data_batch_train[b'fine_labels']).astype('uint8')
 
-        # with open(full_path_test, 'rb') as fo:
-            # data_batch_test = pickle.load(fo, encoding='bytes')
-            # data_all_test = data_batch_test[b'data'].astype('uint8')
-            # coarse_label_all_test \
-                    # = np.array(data_batch_test[b'coarse_labels']).astype('uint8')
-            # fine_label_all_test \
-                    # = np.array(data_batch_test[b'fine_labels']).astype('uint8')
+        with open(full_path_test, 'rb') as fo:
+            data_batch_test = pickle.load(fo, encoding='bytes')
+            data_all_test = data_batch_test[b'data'].astype('uint8')
+            coarse_label_all_test \
+                    = np.array(data_batch_test[b'coarse_labels']).astype('uint8')
+            fine_label_all_test \
+                    = np.array(data_batch_test[b'fine_labels']).astype('uint8')
 
-        # data_all_train = data_all_train.reshape((50000, 3, 32, 32)). \
-                                            # transpose(0, 2, 3, 1)
-        # data_all_test = data_all_test.reshape((10000, 3, 32, 32)). \
-                                          # transpose(0, 2, 3, 1)
+        data_all_train = data_all_train.reshape((50000, 3, 32, 32)). \
+                                            transpose(0, 2, 3, 1)
+        data_all_test = data_all_test.reshape((10000, 3, 32, 32)). \
+                                          transpose(0, 2, 3, 1)
 
-        # return (data_all_train, fine_label_all_train, coarse_label_all_train), \
-               # (data_all_test, fine_label_all_test, coarse_label_all_test)
+        return (data_all_train, fine_label_all_train, coarse_label_all_train), \
+               (data_all_test, fine_label_all_test, coarse_label_all_test)
 
     # def cifar10_keras(self):
         # """
@@ -956,32 +972,47 @@ class DataHandler:
         # return (fashion_train_x, fashion_train_y), \
                # (fashion_test_x, fashion_test_y)
 
-    # def fashion_m(self, file_path):
-        # """
-        # read the fashion_m and the labels, it is created by the
-        # creat_fashion_m.py first.
-        # :param file_path: where is the mnist_m.pkl
-        # :return: (x_train, y_train), (x_test, y_test), (x_valid, y_valid)
-        # """
-        # # load and read the pickl file
-        # fashion_m_path = os.path.join(file_path, 'fashionm_data.pkl')
-        # print(fashion_m_path)
-        # with open(fashion_m_path, 'rb') as fo:
-            # # should use the with as, this method is as the same as SVHN
-            # fashion_m = pickle.load(fo, encoding='bytes')
+    def fashion(self, file_path):
+        """fashion read from original files"""
+        x_train, y_train = self.load_mnist(file_path, kind='train')
+        x_test, y_test = self.load_mnist(file_path, kind='t10k')
+        x_train = (x_train - 0.5) * 2
+        x_test = (x_test - 0.5) * 2
 
-        # # get the mnist_m images data
-        # fashion_m_train = fashion_m['train']
-        # fashion_m_test = fashion_m['test']
+        x_train = x_train.reshape(-1, 28, 28, 1)
+        x_test = x_test.reshape(-1, 28, 28, 1)
 
-        # # get the mnist_m, its labels equal the mnist's
-        # (fashion_train_x, fashion_train_y), (fashion_test_x, fashion_test_y) \
-                # = self.fashion_mnist_keras()
-        # fashion_m_train_label = fashion_train_y
-        # fashion_m_test_label = fashion_test_y
+        x_train = np.concatenate([x_train, x_train, x_train], 3)
+        x_test = np.concatenate([x_test, x_test, x_test], 3)
 
-        # return (fashion_m_train, fashion_m_train_label), \
-               # (fashion_m_test, fashion_m_test_label)
+        return (x_train, y_train), (x_test, y_test)
+
+    def fashion_m(self, file_path):
+        """
+        read the fashion_m and the labels, it is created by the
+        creat_fashion_m.py first.
+        :param file_path: where is the mnist_m.pkl
+        :return: (x_train, y_train), (x_test, y_test), (x_valid, y_valid)
+        """
+        # load and read the pickl file
+        fashion_m_path = os.path.join(file_path, 'fashionm_data.pkl')
+        print(fashion_m_path)
+        with open(fashion_m_path, 'rb') as fo:
+            # should use the with as, this method is as the same as SVHN
+            fashion_m = pickle.load(fo, encoding='bytes')
+
+        # get the mnist_m images data
+        fashion_m_train = fashion_m['train']
+        fashion_m_test = fashion_m['test']
+
+        # get the mnist_m, its labels equal the mnist's
+        (fashion_train_x, fashion_train_y), (fashion_test_x, fashion_test_y) \
+                = self.fashion_mnist_keras()
+        fashion_m_train_label = fashion_train_y
+        fashion_m_test_label = fashion_test_y
+
+        return (fashion_m_train, fashion_m_train_label), \
+               (fashion_m_test, fashion_m_test_label)
 
 
     def resize(self, data_image, res_shape):
@@ -1371,3 +1402,21 @@ class DataHandler:
 
 
         return (data_train_x, label_train_y), (data_test_x, label_test_y)
+
+    def load_mnist(self, path, kind='train'):
+        """Load MNIST data from `path`
+        This is from fashion-mnist github page:
+        https://github.com/zalandoresearch/fashion-mnist"""
+
+        labels_path = os.path.join(path, '%s-labels-idx1-ubyte.gz' % kind)
+        images_path = os.path.join(path, '%s-images-idx3-ubyte.gz' % kind)
+
+        with gzip.open(labels_path, 'rb') as lbpath:
+            labels = np.frombuffer(lbpath.read(), dtype=np.uint8,
+                                   offset=8)
+
+        with gzip.open(images_path, 'rb') as imgpath:
+            images = np.frombuffer(imgpath.read(), dtype=np.uint8,
+                                   offset=16).reshape(len(labels), 784)
+
+        return images, labels

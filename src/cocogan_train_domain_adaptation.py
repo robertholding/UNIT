@@ -51,11 +51,11 @@ def main(argv):
   snapshot_directory = prepare_snapshot_folder(config.snapshot_prefix)
   image_directory, snapshot_directory = prepare_snapshot_and_image_folder(config.snapshot_prefix, iterations, config.image_save_iterations)
 
-  # Load datasets
-  train_loader_a = get_data_loader_svhn(config.datasets['train_a'], batch_size)
-  train_loader_b = get_data_loader_mnist(config.datasets['train_b'], batch_size)
-  test_loader_b = get_data_loader_mnist_test(config.datasets['test_b'], batch_size = config.hyperparameters['test_batch_size'])
-  print(train_loader_a)
+  # # Load datasets
+  # train_loader_a = get_data_loader_svhn(config.datasets['train_a'], batch_size)
+  # train_loader_b = get_data_loader_mnist(config.datasets['train_b'], batch_size)
+  # test_loader_b = get_data_loader_mnist_test(config.datasets['test_b'], batch_size = config.hyperparameters['test_batch_size'])
+  # print(train_loader_a)
 
   # load the data
   data = DataHandler()
@@ -68,12 +68,15 @@ def main(argv):
   svhn_train_x = svhn_train_x.transpose(0, 3, 1, 2)
   svhn_test_x = svhn_test_x.transpose(0, 3, 1, 2)
   svhn_ext_x = svhn_ext_x.transpose(0, 3, 1, 2)
-  svhn_ext_x = svhn_ext_x[:, 0:1, :, :]
-  svhn_test_x = svhn_test_x[:, 0:1, :, :]
 
-  # svhn_train_y = torch.LongTensor([np.int64(svhn_train_y)])
-  # svhn_test_y = torch.LongTensor([np.int64(svhn_test_y)])
-  # svhn_ext_y = torch.LongTensor([np.int64(svhn_ext_y)])
+  # mnist
+  (mnist_train_x, mnist_train_y), (mnist_test_x, mnist_test_y) = \
+          data.mnist("../../../datasets/mnist-tf")
+  mnist_train_x = data.resize(mnist_train_x, (32, 32))
+  mnist_test_x = data.resize(mnist_test_x, (32, 32))
+
+  mnist_train_x = mnist_train_x.transpose(0, 3, 1, 2)
+  mnist_test_x = mnist_test_x.transpose(0, 3, 1, 2)
 
   print(svhn_train_x.shape, svhn_train_y.shape, svhn_test_x.shape,
         svhn_test_y.shape)
@@ -88,24 +91,22 @@ def main(argv):
                                            svhn_test_y], size_batch,
                                           shuffle=True)
 
-  # svhn_loader = torch.utils.data.DataLoader(dataset=(svhn_train_x, svhn_train_y),
-                                            # batch_size=batch_size,
-                                            # shuffle=True,
-                                            # num_workers=10)
-  # svhn_ext_loder = torch.utils.data.DataLoader(dataset=(svhn_ext_x, svhn_ext_y),
-                                               # batch_size=batch_size,
-                                               # shuffle=True,
-                                               # num_workers=10)
-  # svhn_te_loader = torch.utils.data.DataLoader(dataset=(svhn_test_x, svhn_test_y),
-                                               # batch_size=batch_size,
-                                               # shuffle=True,
-                                               # num_workers=10)
+  mnist_generator_tr = data.batch_generator([mnist_train_x,
+                                             mnist_train_y], size_batch,
+                                            shuffle=True)
+  mnist_generator_te = data.batch_generator([mnist_test_x,
+                                            mnist_test_y], size_batch,
+                                           shuffle=True)
+
+  source_ge_tr = svhn_generator_tr
+  target_ge_tr = mnist_generator_tr
+  target_ge_te = mnist_generator_te
 
   best_score = 0
   for ep in range(0, MAX_EPOCHS):
     print("epoch:", ep)
     for it, ((images_a, labels_a), (images_b,labels_b)) in \
-    enumerate(zip(svhn_generator_tr, svhn_generator_ex)):
+    enumerate(zip(source_ge_tr, target_ge_tr)):
       print("images:", it)
       # if images_a.size(0) != batch_size or images_b.size(0) != batch_size:
         # continue
@@ -131,7 +132,7 @@ def main(argv):
         trainer.dis.eval()
         score = 0
         num_samples = 0
-        for tit, (test_images_b, test_labels_b) in enumerate(svhn_generator_te):
+        for tit, (test_images_b, test_labels_b) in enumerate(target_ge_te):
           print("test:", tit)
           test_images_b = torch.tensor(test_images_b).float()
           test_labels_b = torch.LongTensor([np.int64(test_labels_b)])
