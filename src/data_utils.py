@@ -27,11 +27,11 @@ class DataHandler:
         """mnist read from original files"""
         x_train, y_train = self.load_mnist(file_path, kind='train')
         x_test, y_test = self.load_mnist(file_path, kind='t10k')
-        x_train = (x_train - 0.5) * 2
-        x_test = (x_test - 0.5) * 2
+        # x_train = (x_train - 0.5) * 2
+        # x_test = (x_test - 0.5) * 2
 
-        x_train = x_train.reshape(-1, 28, 28, 1)
-        x_test = x_test.reshape(-1, 28, 28, 1)
+        x_train = (x_train > 0).reshape(-1, 28, 28, 1).astype('uint8') * 255
+        x_test = (x_test > 0).reshape(-1, 28, 28, 1).astype('uint8') * 255
 
         x_train = np.concatenate([x_train, x_train, x_train], 3)
         x_test = np.concatenate([x_test, x_test, x_test], 3)
@@ -976,11 +976,11 @@ class DataHandler:
         """fashion read from original files"""
         x_train, y_train = self.load_mnist(file_path, kind='train')
         x_test, y_test = self.load_mnist(file_path, kind='t10k')
-        x_train = (x_train - 0.5) * 2
-        x_test = (x_test - 0.5) * 2
+        # x_train = (x_train - 0.5) * 2
+        # x_test = (x_test - 0.5) * 2
 
-        x_train = x_train.reshape(-1, 28, 28, 1)
-        x_test = x_test.reshape(-1, 28, 28, 1)
+        x_train = (x_train > 0).reshape(-1, 28, 28, 1).astype('uint8') * 255.0
+        x_test = (x_test > 0).reshape(-1, 28, 28, 1).astype('uint8') * 255.0
 
         x_train = np.concatenate([x_train, x_train, x_train], 3)
         x_test = np.concatenate([x_test, x_test, x_test], 3)

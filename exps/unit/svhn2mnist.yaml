@@ -20,7 +20,7 @@ train:
     test_batch_size: 100
     max_iterations: 200000 # maximum number of training epochs
     input_dim_a: 3
-    input_dim_b: 1
+    input_dim_b: 3
   datasets:
     train_a: # Domain 1 dataset
       class_name: dataset_svhn_extra # dataset class

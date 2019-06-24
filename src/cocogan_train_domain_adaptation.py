@@ -91,10 +91,10 @@ def main(argv):
                                            svhn_test_y], size_batch,
                                           shuffle=True)
 
-  mnist_generator_tr = data.batch_generator([mnist_train_x,
+  mnist_generator_tr = data.batch_generator([mnist_train_x / 255.0,
                                              mnist_train_y], size_batch,
                                             shuffle=True)
-  mnist_generator_te = data.batch_generator([mnist_test_x,
+  mnist_generator_te = data.batch_generator([mnist_test_x / 255.0,
                                             mnist_test_y], size_batch,
                                            shuffle=True)
 
@@ -116,7 +116,7 @@ def main(argv):
       labels_b = torch.tensor([np.int64(labels_b)])
       trainer.dis.train()
       images_a = Variable(images_a.cuda(opts.gpu))
-      print("tensor images:", images_a)
+      print("tensor images:", images_b)
       labels_a = Variable(labels_a.cuda(opts.gpu)).view(images_a.size(0))
       images_b = Variable(images_b.cuda(opts.gpu))
       # Main training code
